@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>LabelLens – See Beyond the Label</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <header class="header">
+        <h1>LabelLens</h1>
+        <p class="tagline">See beyond the label – understand what you eat.</p>
+    </header>
+
+    <main class="container">
+        <section class="controls">
+            <div class="control-group">
+                <label for="searchInput">Search product</label>
+                <input id="searchInput" type="text" placeholder="e.g. Nutella, cereal, biscuits" />
+                <button id="searchBtn">Search</button>
+            </div>
+
+            <div class="control-group">
+                <label for="sortSelect">Sort by</label>
+                <select id="sortSelect">
+                    <option value="nutriScore">Nutri-Score (best first)</option>
+                    <option value="sugar">Lowest sugar (per 100g)</option>
+                    <option value="salt">Lowest salt (per 100g)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="nutriFilter">Nutri-Score filter</label>
+                <select id="nutriFilter">
+                    <option value="all">All</option>
+                    <option value="ab">A–B (best)</option>
+                    <option value="c">C</option>
+                    <option value="de">D–E (worst)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="countrySelect">Country (optional)</label>
+                <select id="countrySelect">
+                    <option value="">All countries</option>
+                </select>
+            </div>
+        </section>
+
+        <div id="errorBanner" class="banner banner-error" hidden></div>
+        <div id="infoBanner" class="banner banner-info" hidden></div>
+        <div id="loading" class="loading" hidden>Loading...</div>
+
+        <section class="results">
+            <h2>Results</h2>
+            <div id="resultsContainer" class="results-grid">
+                <!-- Product cards will be injected here -->
+            </div>
+        </section>
+
+        <section class="details">
+            <h2>Product details</h2>
+            <div id="detailsPanel" class="details-panel">
+                <p>Select a product to see detailed nutrition and warnings.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <small>LabelLens – Student project. Data from Open Food Facts & USDA FoodData Central.</small>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+
+</html>
