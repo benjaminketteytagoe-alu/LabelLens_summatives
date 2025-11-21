@@ -472,6 +472,7 @@ button:hover {
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
     margin-top: 1.25rem;
 }
@@ -482,6 +483,10 @@ button:hover {
     border-radius: 14px;
     padding: 0.9rem 1rem;
     box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+
+.details-section h3 {
+    margin-top: 0;
+    font-size: 1rem;
 }
 
 .panel-head {
@@ -502,6 +507,12 @@ button:hover {
     font-size: 0.75rem;
     color: var(--muted);
     margin: 0;
+    font-size: 0.9rem;
+    color: #e2e8f0;
+}
+
+.nutrient-list li {
+    margin-bottom: 0.3rem;
 }
 
 .score-grid {
@@ -701,5 +712,63 @@ body[data-auth="member"] .tagline::after {
 
     .dashboard-grid {
         grid-template-columns: 1fr;
+    }
+}
+    gap: 0.35rem;
+    font-size: 0.9rem;
+}
+
+.flag-danger {
+    color: var(--danger);
+}
+
+.flag-ok {
+    color: var(--ok);
+}
+
+#nutritionChart {
+    margin-top: 1rem;
+    background: var(--card);
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    padding: 0.5rem;
+    border: 1px solid var(--stroke);
+}
+
+.footer {
+    text-align: center;
+    padding: 1.25rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+body[data-auth="member"] .header {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(59, 130, 246, 0.4)),
+        radial-gradient(circle at 30% 10%, rgba(255, 255, 255, 0.1), transparent 38%),
+        rgba(12, 18, 35, 0.8);
+}
+
+body[data-auth="member"] .tagline::after {
+    content: "Member mode: preferences synced";
+    display: inline-block;
+    margin-left: 0.6rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.2);
+    color: #bbf7d0;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 640px) {
+    .header {
+        padding: 2rem 1.25rem;
+    }
+
+    .auth-form {
+        flex-direction: column;
+    }
+
+    button {
+        width: 100%;
     }
 }
