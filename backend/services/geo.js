@@ -1,7 +1,3 @@
-const GEODB_BASE_URL = process.env.GEODB_BASE_URL || 'https://wft-geo-db.p.rapidapi.com/v1';
-const GEODB_API_KEY = process.env.GEODB_API_KEY;
-const GEODB_HOST = process.env.GEODB_HOST || 'wft-geo-db.p.rapidapi.com';
-
 // services/geo.js
 const axios = require( 'axios' );
 
@@ -15,9 +11,10 @@ async function getCountries ()
 
     try
     {
-        const url = 'https://restcountries.com/v3.1/all';
-        const res = await axios.get( url );
+        // RestCountries now requires fields to be specified for /all
+        const url = 'https://restcountries.com/v3.1/all?fields=cca2,name,region';
 
+        const res = await axios.get( url );
         const data = res.data || [];
 
         cachedCountries = data
@@ -32,7 +29,12 @@ async function getCountries ()
         return cachedCountries;
     } catch ( err )
     {
-        console.error( 'RestCountries error:', err.message );
+        // Make debugging nicer in future
+        console.error(
+            'RestCountries error:',
+            err.response?.status,
+            err.response?.data || err.message
+        );
         cachedCountries = [];
         return cachedCountries;
     }
@@ -41,4 +43,3 @@ async function getCountries ()
 module.exports = {
     getCountries
 };
-
