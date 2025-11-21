@@ -4,13 +4,22 @@ const searchBtn = document.getElementById( 'searchBtn' );
 const sortSelect = document.getElementById( 'sortSelect' );
 const nutriFilter = document.getElementById( 'nutriFilter' );
 const countrySelect = document.getElementById( 'countrySelect' );
+const savePrefsBtn = document.getElementById( 'savePrefsBtn' );
 const resultsContainer = document.getElementById( 'resultsContainer' );
 const detailsPanel = document.getElementById( 'detailsPanel' );
 const errorBanner = document.getElementById( 'errorBanner' );
 const infoBanner = document.getElementById( 'infoBanner' );
 const loadingEl = document.getElementById( 'loading' );
+const loginForm = document.getElementById( 'loginForm' );
+const usernameInput = document.getElementById( 'usernameInput' );
+const passwordInput = document.getElementById( 'passwordInput' );
+const authStatus = document.getElementById( 'authStatus' );
+const logoutBtn = document.getElementById( 'logoutBtn' );
+const nutritionChartEl = document.getElementById( 'nutritionChart' );
 
 let allProducts = [];
+let authToken = localStorage.getItem( 'token' ) || null;
+let chartInstance = null;
 
 // Helpers to show/hide banners & loading
 function showError ( message )
@@ -45,6 +54,53 @@ function showLoading ()
 function hideLoading ()
 {
     loadingEl.hidden = true;
+}
+
+function updateAuthUI ()
+{
+    const signedIn = Boolean( authToken );
+    authStatus.textContent = signedIn ? 'Signed in' : 'Signed out';
+    logoutBtn.hidden = !signedIn;
+    loginForm.querySelectorAll( 'input' ).forEach( inp => inp.disabled = signedIn );
+}
+
+async function login ( event )
+{
+    event.preventDefault();
+    clearError();
+
+    try
+    {
+        const res = await fetch( '/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify( {
+                username: usernameInput.value.trim(),
+                password: passwordInput.value
+            } )
+        } );
+
+        if ( !res.ok )
+        {
+            throw new Error( 'Invalid credentials' );
+        }
+
+        const data = await res.json();
+        authToken = data.token;
+        localStorage.setItem( 'token', authToken );
+        updateAuthUI();
+        await loadPreferences();
+    } catch ( err )
+    {
+        showError( 'Login failed. Check username/password.' );
+    }
+}
+
+function logout ()
+{
+    authToken = null;
+    localStorage.removeItem( 'token' );
+    updateAuthUI();
 }
 
 // Load countries (optional enhancement for future)
@@ -107,6 +163,64 @@ async function searchProducts ()
     } finally
     {
         hideLoading();
+    }
+}
+
+async function loadPreferences ()
+{
+    if ( !authToken ) return;
+
+    try
+    {
+        const res = await fetch( '/api/auth/preferences', {
+            headers: { Authorization: `Bearer ${ authToken }` }
+        } );
+        if ( !res.ok ) return;
+        const prefs = await res.json();
+        sortSelect.value = prefs.sort;
+        nutriFilter.value = prefs.nutriFilter;
+        countrySelect.value = prefs.country;
+        applyFiltersAndRender();
+    } catch ( err )
+    {
+        console.warn( 'Unable to load preferences', err );
+    }
+}
+
+async function savePreferences ()
+{
+    if ( !authToken )
+    {
+        showError( 'Login to save your preferences.' );
+        return;
+    }
+
+    clearError();
+
+    try
+    {
+        const res = await fetch( '/api/auth/preferences', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${ authToken }`
+            },
+            body: JSON.stringify( {
+                sort: sortSelect.value,
+                nutriFilter: nutriFilter.value,
+                country: countrySelect.value
+            } )
+        } );
+
+        if ( !res.ok )
+        {
+            throw new Error( 'Unable to save preferences' );
+        }
+
+        showInfo( 'Preferences saved for your account.' );
+    } catch ( err )
+    {
+        showError( 'Could not save preferences right now.' );
     }
 }
 
@@ -318,6 +432,51 @@ function renderDetails ( p )
       </div>
     </div>
   `;
+
+    renderNutritionChart( nutr );
+}
+
+function renderNutritionChart ( nutr )
+{
+    const labels = [ 'Fat', 'Saturated fat', 'Carbs', 'Sugars', 'Fiber', 'Protein', 'Salt' ];
+    const values = [
+        nutr.fat100g ?? 0,
+        nutr.saturatedFat100g ?? 0,
+        nutr.carbs100g ?? 0,
+        nutr.sugars100g ?? 0,
+        nutr.fiber100g ?? 0,
+        nutr.protein100g ?? 0,
+        nutr.salt100g ?? 0
+    ];
+
+    if ( chartInstance )
+    {
+        chartInstance.destroy();
+    }
+
+    chartInstance = new Chart( nutritionChartEl, {
+        type: 'radar',
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: 'per 100g',
+                    data: values,
+                    backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                    borderColor: '#2563eb'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    ticks: { maxTicksLimit: 5 }
+                }
+            }
+        }
+    } );
 }
 
 // Event listeners
@@ -334,6 +493,11 @@ searchInput.addEventListener( 'keydown', ( e ) =>
 
 sortSelect.addEventListener( 'change', applyFiltersAndRender );
 nutriFilter.addEventListener( 'change', applyFiltersAndRender );
+loginForm.addEventListener( 'submit', login );
+logoutBtn.addEventListener( 'click', logout );
+savePrefsBtn.addEventListener( 'click', savePreferences );
 
 // Initial load
 loadCountries();
+updateAuthUI();
+loadPreferences();

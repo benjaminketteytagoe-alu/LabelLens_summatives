@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: labellens
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: labellens
+  template:
+    metadata:
+      labels:
+        app: labellens
+    spec:
+      containers:
+        - name: labellens
+          image: labellens:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: labellens-secrets
+                  key: jwtSecret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: labellens
+spec:
+  type: ClusterIP
+  selector:
+    app: labellens
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000

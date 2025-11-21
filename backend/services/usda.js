@@ -1,4 +1,5 @@
 const axios = require( 'axios' );
+const { getCached, setCached } = require( './cache' );
 
 const USDA_BASE_URL = process.env.USDA_BASE_URL || 'https://api.nal.usda.gov/fdc/v1';
 const USDA_API_KEY = process.env.USDA_API_KEY;
@@ -10,6 +11,10 @@ async function getNutritionByName ( name )
         console.warn( 'USDA_API_KEY not set, skipping USDA call' );
         return null;
     }
+
+    const cacheKey = `usda:${ name }`;
+    const cached = getCached( cacheKey );
+    if ( cached ) return cached;
 
     const url = `${ USDA_BASE_URL }/foods/search`;
     const params = {
@@ -32,12 +37,15 @@ async function getNutritionByName ( name )
         amount: n.value
     } ) );
 
-    return {
+    const normalized = {
         fdcId: food.fdcId,
         description: food.description,
         dataType: food.dataType,
         nutrients
     };
+
+    setCached( cacheKey, normalized );
+    return normalized;
 }
 
 module.exports = {
