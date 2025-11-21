@@ -16,6 +16,7 @@ const passwordInput = document.getElementById( 'passwordInput' );
 const authStatus = document.getElementById( 'authStatus' );
 const logoutBtn = document.getElementById( 'logoutBtn' );
 const nutritionChartEl = document.getElementById( 'nutritionChart' );
+const accessBadge = document.getElementById( 'accessBadge' );
 
 let allProducts = [];
 let authToken = localStorage.getItem( 'token' ) || null;
@@ -59,9 +60,16 @@ function hideLoading ()
 function updateAuthUI ()
 {
     const signedIn = Boolean( authToken );
-    authStatus.textContent = signedIn ? 'Signed in' : 'Signed out';
+    authStatus.textContent = signedIn ? '🔓 Signed in' : '🔒 Signed out';
     logoutBtn.hidden = !signedIn;
     loginForm.querySelectorAll( 'input' ).forEach( inp => inp.disabled = signedIn );
+
+    document.body.dataset.auth = signedIn ? 'member' : 'guest';
+    if ( accessBadge )
+    {
+        accessBadge.textContent = signedIn ? 'Member access' : 'Guest access';
+        accessBadge.className = signedIn ? 'access-chip access-chip--signed' : 'access-chip';
+    }
 }
 
 async function login ( event )
@@ -367,60 +375,135 @@ function renderDetails ( p )
 
     const usdaNutrients = ( p.usdaDetail?.nutrients || [] ).slice( 0, 10 ); // first 10
 
+    const warningFlags = [
+        {
+            active: flags.highSugar,
+            label: 'High in sugar',
+            detail: `${ nutr.sugars100g ?? 'N/A' } g sugars / 100g`,
+            tone: 'sugar'
+        },
+        {
+            active: flags.highSalt,
+            label: 'High in salt',
+            detail: `${ nutr.salt100g ?? 'N/A' } g salt / 100g`,
+            tone: 'salt'
+        },
+        {
+            active: flags.containsPalmOil,
+            label: 'Contains palm oil',
+            detail: 'Palm oil present in ingredients',
+            tone: 'palm'
+        }
+    ];
+
+    const anyAlerts = warningFlags.some( w => w.active );
+
     detailsPanel.innerHTML = `
-    <div class="details-grid">
-      <div class="details-section">
-        <h3>Overview</h3>
-        <p><strong>${ p.name }</strong></p>
-        <p>Brand: ${ p.brand || 'Unknown' }</p>
-        <p>Nutri-Score: ${ p.nutriScore ? p.nutriScore.toUpperCase() : 'N/A' }</p>
-        <p>Eco-score: ${ p.ecoScore ? p.ecoScore.toUpperCase() : 'N/A' } ${ p.ecoScoreLabel ? `(${ p.ecoScoreLabel })` : '' }</p>
-      </div>
-
-      <div class="details-section">
-        <h3>Key nutrients (per 100g)</h3>
-        <ul class="nutrient-list">
-          <li>Energy: ${ nutr.energyKcal100g ?? 'N/A' } kcal</li>
-          <li>Fat: ${ nutr.fat100g ?? 'N/A' } g</li>
-          <li>Saturated fat: ${ nutr.saturatedFat100g ?? 'N/A' } g</li>
-          <li>Carbs: ${ nutr.carbs100g ?? 'N/A' } g</li>
-          <li>Sugars: ${ nutr.sugars100g ?? 'N/A' } g</li>
-          <li>Fiber: ${ nutr.fiber100g ?? 'N/A' } g</li>
-          <li>Protein: ${ nutr.protein100g ?? 'N/A' } g</li>
-          <li>Salt: ${ nutr.salt100g ?? 'N/A' } g</li>
-        </ul>
-      </div>
-
-      <div class="details-section">
-        <h3>Warnings</h3>
-        <div class="flags">
-          <span class="${ flags.highSugar ? 'flag-danger' : 'flag-ok' }">
-            ${ flags.highSugar ? '⚠ High in sugar' : '✔ Sugar level okay' }
-          </span>
-          <span class="${ flags.highSalt ? 'flag-danger' : 'flag-ok' }">
-            ${ flags.highSalt ? '⚠ High in salt' : '✔ Salt level okay' }
-          </span>
-          <span class="${ flags.containsPalmOil ? 'flag-danger' : 'flag-ok' }">
-            ${ flags.containsPalmOil ? '⚠ Contains palm oil' : '✔ No palm oil detected' }
-          </span>
-          <span>
-            Vegan: ${ flags.vegan ? 'Yes' : 'No / unknown' }
-          </span>
-          <span>
-            Vegetarian: ${ flags.vegetarian ? 'Yes' : 'No / unknown' }
-          </span>
+    <div class="dash-header">
+      <div>
+        <p class="pill-label">Selected product</p>
+        <h3 class="dash-title">${ p.name }</h3>
+        <p class="dash-sub">${ p.brand || 'Unknown' }${ p.countries ? ` · ${ p.countries }` : '' }</p>
+        <div class="dash-chips">
+          <span class="chip chip-line">Barcode ${ p.barcode }</span>
+          <span class="chip chip-strong">Nutri-Score ${ ( p.nutriScore || 'N/A' ).toString().toUpperCase() }</span>
+          <span class="chip chip-soft">Eco-score ${ ( p.ecoScore || 'N/A' ).toString().toUpperCase() }</span>
         </div>
       </div>
-
-      <div class="details-section">
-        <h3>Allergens</h3>
-        <p>${ allergens.length ? allergens.join( ', ' ) : 'No allergens listed.' }</p>
-        <h3>Ingredients</h3>
-        <p>${ p.ingredientsText || 'No ingredients text available.' }</p>
+      <div class="dash-callout ${ anyAlerts ? 'dash-callout--alert' : 'dash-callout--ok' }">
+        <p class="callout-title">${ anyAlerts ? 'Warnings detected' : 'No critical warnings' }</p>
+        <p class="callout-body">${ anyAlerts
+            ? 'Check the flagged items below before choosing this product.'
+            : 'This product does not trigger sugar, salt, or palm-oil warnings.'
+        }</p>
       </div>
+    </div>
 
-      <div class="details-section">
-        <h3>USDA extra data</h3>
+    <div class="dashboard-grid">
+      <section class="panel">
+        <div class="panel-head">
+          <p class="pill-label">Vitals</p>
+          <h4>Nutrition snapshot</h4>
+        </div>
+        <div class="score-grid">
+          <div class="score-card">
+            <p class="score-label">Energy</p>
+            <p class="score-value">${ nutr.energyKcal100g ?? 'N/A' }</p>
+            <small>kcal per 100g</small>
+          </div>
+          <div class="score-card">
+            <p class="score-label">Sugars</p>
+            <p class="score-value">${ nutr.sugars100g ?? 'N/A' } g</p>
+            <small>per 100g</small>
+          </div>
+          <div class="score-card">
+            <p class="score-label">Salt</p>
+            <p class="score-value">${ nutr.salt100g ?? 'N/A' } g</p>
+            <small>per 100g</small>
+          </div>
+          <div class="score-card">
+            <p class="score-label">Protein</p>
+            <p class="score-value">${ nutr.protein100g ?? 'N/A' } g</p>
+            <small>per 100g</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel warning-panel">
+        <div class="panel-head">
+          <p class="pill-label">Warnings & suitability</p>
+          <h4>Flags to review</h4>
+        </div>
+        <div class="warning-list">
+          ${ warningFlags.map( flag => `
+            <div class="warning-chip ${ flag.active ? 'warning-chip--alert' : 'warning-chip--ok' } warning-chip--${ flag.tone }">
+              <div>
+                <p class="warning-title">${ flag.active ? '⚠ ' : '✔ ' }${ flag.label }</p>
+                <p class="warning-detail">${ flag.detail }</p>
+              </div>
+              <span class="status-pill">${ flag.active ? 'Review' : 'Clear' }</span>
+            </div>
+          ` ).join( '' ) }
+          <div class="suitability-row">
+            <span class="status-pill">Vegan: ${ flags.vegan ? 'Yes' : 'No / unknown' }</span>
+            <span class="status-pill">Vegetarian: ${ flags.vegetarian ? 'Yes' : 'No / unknown' }</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <p class="pill-label">Macro view</p>
+          <h4>Key nutrients (per 100g)</h4>
+        </div>
+        <ul class="nutrient-list nutrient-grid">
+          <li><span>Energy</span><span>${ nutr.energyKcal100g ?? 'N/A' } kcal</span></li>
+          <li><span>Fat</span><span>${ nutr.fat100g ?? 'N/A' } g</span></li>
+          <li><span>Saturated fat</span><span>${ nutr.saturatedFat100g ?? 'N/A' } g</span></li>
+          <li><span>Carbs</span><span>${ nutr.carbs100g ?? 'N/A' } g</span></li>
+          <li><span>Sugars</span><span>${ nutr.sugars100g ?? 'N/A' } g</span></li>
+          <li><span>Fiber</span><span>${ nutr.fiber100g ?? 'N/A' } g</span></li>
+          <li><span>Protein</span><span>${ nutr.protein100g ?? 'N/A' } g</span></li>
+          <li><span>Salt</span><span>${ nutr.salt100g ?? 'N/A' } g</span></li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <p class="pill-label">Ingredients</p>
+          <h4>Allergens & label</h4>
+        </div>
+        <p class="muted">Allergens</p>
+        <p>${ allergens.length ? allergens.join( ', ' ) : 'No allergens listed.' }</p>
+        <p class="muted">Ingredients</p>
+        <p>${ p.ingredientsText || 'No ingredients text available.' }</p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <p class="pill-label">Regulatory data</p>
+          <h4>USDA extra data</h4>
+        </div>
         ${ usdaNutrients.length
             ? `<ul class="nutrient-list">
                 ${ usdaNutrients
@@ -429,7 +512,7 @@ function renderDetails ( p )
                </ul>`
             : '<p>No extra USDA data available for this product.</p>'
         }
-      </div>
+      </section>
     </div>
   `;
 
