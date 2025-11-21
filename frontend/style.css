@@ -395,6 +395,233 @@ button:hover {
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.22);
 }
 
+.dash-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.35rem 0 1rem;
+    border-bottom: 1px solid var(--stroke);
+}
+
+.dash-title {
+    margin: 0.1rem 0 0.25rem;
+}
+
+.dash-sub {
+    margin: 0 0 0.65rem;
+    color: var(--muted);
+}
+
+.dash-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.chip {
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    font-size: 0.85rem;
+    color: var(--text);
+}
+
+.chip-line {
+    color: #67e8f9;
+    border-color: rgba(34, 211, 238, 0.3);
+}
+
+.chip-strong {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(16, 185, 129, 0.5));
+    color: #0b1021;
+    border: none;
+}
+
+.chip-soft {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.dash-callout {
+    border-radius: 14px;
+    padding: 0.75rem 1rem;
+    min-width: 240px;
+    border: 1px solid var(--stroke);
+}
+
+.dash-callout--alert {
+    background: linear-gradient(135deg, rgba(248, 113, 113, 0.15), rgba(251, 191, 36, 0.12));
+    border-color: rgba(248, 113, 113, 0.35);
+}
+
+.dash-callout--ok {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.14), rgba(59, 130, 246, 0.15));
+    border-color: rgba(59, 130, 246, 0.35);
+}
+
+.callout-title {
+    margin: 0 0 0.2rem;
+    font-weight: 700;
+}
+
+.callout-body {
+    margin: 0;
+    color: var(--muted);
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1.25rem;
+}
+
+.panel {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--stroke);
+    border-radius: 14px;
+    padding: 0.9rem 1rem;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+
+.details-section h3 {
+    margin-top: 0;
+    font-size: 1rem;
+}
+
+.panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+}
+
+.panel-head h4 {
+    margin: 0;
+}
+
+.pill-label {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin: 0;
+    font-size: 0.9rem;
+    color: #e2e8f0;
+}
+
+.nutrient-list li {
+    margin-bottom: 0.3rem;
+}
+
+.score-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.6rem;
+}
+
+.score-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--stroke);
+    border-radius: 12px;
+    padding: 0.75rem;
+}
+
+.score-label {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.score-value {
+    margin: 0.1rem 0 0.15rem;
+    font-weight: 700;
+    font-size: 1.35rem;
+}
+
+.warning-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.warning-chip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.7rem 0.8rem;
+    border-radius: 12px;
+    border: 1px solid var(--stroke);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.warning-chip--alert {
+    border-color: rgba(248, 113, 113, 0.45);
+    background: rgba(248, 113, 113, 0.12);
+}
+
+.warning-chip--ok {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.08);
+}
+
+.warning-chip--sugar {
+    box-shadow: inset 0 0 0 1px rgba(244, 114, 182, 0.5);
+}
+
+.warning-chip--salt {
+    box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.4);
+}
+
+.warning-chip--palm {
+    box-shadow: inset 0 0 0 1px rgba(251, 191, 36, 0.4);
+}
+
+.warning-title {
+    margin: 0;
+    font-weight: 700;
+}
+
+.warning-detail {
+    margin: 0.1rem 0 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.status-pill {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.35rem 0.6rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    border: 1px solid var(--stroke);
+}
+
+.suitability-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.35rem;
+}
+
+.nutrient-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem 0.5rem;
+}
+
+.nutrient-grid li {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.15rem;
+}
+
+.muted {
+    color: var(--muted);
+}
+
 .details-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -421,6 +648,72 @@ button:hover {
 .flags {
     display: flex;
     flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+}
+
+.flag-danger {
+    color: var(--danger);
+}
+
+.flag-ok {
+    color: var(--ok);
+}
+
+#nutritionChart {
+    margin-top: 1rem;
+    background: var(--card);
+    border-radius: 14px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    padding: 0.5rem;
+    border: 1px solid var(--stroke);
+}
+
+.footer {
+    text-align: center;
+    padding: 1.25rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+body[data-auth="member"] .header {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(59, 130, 246, 0.4)),
+        radial-gradient(circle at 30% 10%, rgba(255, 255, 255, 0.1), transparent 38%),
+        rgba(12, 18, 35, 0.8);
+}
+
+body[data-auth="member"] .tagline::after {
+    content: "Member mode: preferences synced";
+    display: inline-block;
+    margin-left: 0.6rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.2);
+    color: #bbf7d0;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 640px) {
+    .header {
+        padding: 2rem 1.25rem;
+    }
+
+    .auth-form {
+        flex-direction: column;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    .dash-header {
+        flex-direction: column;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
     gap: 0.35rem;
     font-size: 0.9rem;
 }
