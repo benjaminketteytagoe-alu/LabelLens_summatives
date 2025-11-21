@@ -8,13 +8,12 @@ const usdaService = require( '../services/usda' );
 router.get( '/search', async ( req, res ) =>
 {
     const { q, limit } = req.query;
-
-    if ( !q || !q.trim() )
-    {
-        return res.status( 400 ).json( { message: "Query parameter 'q' is required." } );
-    }
-
     const parsedLimit = Number( limit ) || 10;
+
+    if ( !q || typeof q !== 'string' || q.trim().length < 2 || parsedLimit < 1 || parsedLimit > 50 )
+    {
+        return res.status( 400 ).json( { message: 'Invalid search parameters' } );
+    }
 
     try
     {
@@ -31,6 +30,10 @@ router.get( '/search', async ( req, res ) =>
 router.get( '/:barcode', async ( req, res ) =>
 {
     const { barcode } = req.params;
+    if ( !barcode || typeof barcode !== 'string' || barcode.length < 5 || barcode.length > 20 || !/^[\w-]+$/.test( barcode ) )
+    {
+        return res.status( 400 ).json( { message: 'Invalid barcode' } );
+    }
 
     try
     {

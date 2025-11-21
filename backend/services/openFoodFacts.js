@@ -1,4 +1,5 @@
 const axios = require( 'axios' );
+const { getCached, setCached } = require( './cache' );
 
 const OFF_BASE_URL = process.env.OFF_BASE_URL || 'https://world.openfoodfacts.net';
 
@@ -9,6 +10,10 @@ const OFF_HEADERS = {
 
 async function searchProducts ( query, limit = 10 )
 {
+    const cacheKey = `off:search:${ query }:${ limit }`;
+    const cached = getCached( cacheKey );
+    if ( cached ) return cached;
+
     const url = `${ OFF_BASE_URL }/cgi/search.pl`;
     const params = {
         search_terms: query,
@@ -22,7 +27,7 @@ async function searchProducts ( query, limit = 10 )
 
     const products = res.data.products || [];
 
-    return products.map( p => ( {
+    const normalized = products.map( p => ( {
         barcode: p.code,
         name: p.product_name || p.generic_name || 'Unknown product',
         brand: p.brands || 'Unknown brand',
@@ -33,10 +38,17 @@ async function searchProducts ( query, limit = 10 )
         sugars100g: p.nutriments?.sugars_100g ?? null,
         salt100g: p.nutriments?.salt_100g ?? null
     } ) ).filter( p => p.barcode ); // only keep products with a barcode
+
+    setCached( cacheKey, normalized );
+    return normalized;
 }
 
 async function getProductByBarcode ( barcode )
 {
+    const cacheKey = `off:product:${ barcode }`;
+    const cached = getCached( cacheKey );
+    if ( cached ) return cached;
+
     const url = `${ OFF_BASE_URL }/api/v2/product/${ barcode }`;
     const params = {
         fields: [
@@ -64,7 +76,7 @@ async function getProductByBarcode ( barcode )
 
     const nutr = p.nutriments || {};
 
-    return {
+    const normalized = {
         barcode: p.code,
         name: p.product_name || 'Unknown product',
         brand: p.brands || 'Unknown brand',
@@ -85,6 +97,9 @@ async function getProductByBarcode ( barcode )
             salt100g: nutr.salt_100g ?? null
         }
     };
+
+    setCached( cacheKey, normalized );
+    return normalized;
 }
 
 module.exports = {
