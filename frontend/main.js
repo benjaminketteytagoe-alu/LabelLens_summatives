@@ -16,6 +16,7 @@ const passwordInput = document.getElementById( 'passwordInput' );
 const authStatus = document.getElementById( 'authStatus' );
 const logoutBtn = document.getElementById( 'logoutBtn' );
 const nutritionChartEl = document.getElementById( 'nutritionChart' );
+const accessBadge = document.getElementById( 'accessBadge' );
 
 let allProducts = [];
 let authToken = localStorage.getItem( 'token' ) || null;
@@ -59,9 +60,16 @@ function hideLoading ()
 function updateAuthUI ()
 {
     const signedIn = Boolean( authToken );
-    authStatus.textContent = signedIn ? 'Signed in' : 'Signed out';
+    authStatus.textContent = signedIn ? '🔓 Signed in' : '🔒 Signed out';
     logoutBtn.hidden = !signedIn;
     loginForm.querySelectorAll( 'input' ).forEach( inp => inp.disabled = signedIn );
+
+    document.body.dataset.auth = signedIn ? 'member' : 'guest';
+    if ( accessBadge )
+    {
+        accessBadge.textContent = signedIn ? 'Member access' : 'Guest access';
+        accessBadge.className = signedIn ? 'access-chip access-chip--signed' : 'access-chip';
+    }
 }
 
 async function login ( event )
