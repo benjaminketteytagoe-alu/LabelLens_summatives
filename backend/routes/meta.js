@@ -9,7 +9,7 @@ router.get( '/countries', async ( req, res ) =>
     try
     {
         const countries = await geoService.getCountries();
-        res.json( countries );   // will be [] if API not available
+        res.json( countries );
     } catch ( err )
     {
         console.error( 'Error fetching countries:', err.message );
