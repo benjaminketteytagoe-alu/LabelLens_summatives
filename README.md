@@ -97,18 +97,6 @@ The backend serves the `frontend/` directory as static files, so both the UI and
 ## 4. Environment Configuration
 
 All sensitive values live in `backend/.env`:
-
-```env
-PORT=3000
-
-# Open Food Facts
-OFF_BASE_URL=https://world.openfoodfacts.net
-
-# USDA FoodData Central
-USDA_BASE_URL=https://api.nal.usda.gov/fdc/v1
-USDA_API_KEY=YOUR_USDA_API_KEY_HERE
-```
-
 > The `.env` file is intentionally **ignored** by Git and must be created on each environment (local, web01, web02).
 
 ---
